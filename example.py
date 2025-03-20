@@ -3,8 +3,8 @@
 import logging
 from ina219 import INA219
 
-SHUNT_OHMS = 0.1
-MAX_EXPECTED_AMPS = 0.2
+SHUNT_OHMS = 0.01
+MAX_EXPECTED_AMPS = 5.0
 
 
 def read():
