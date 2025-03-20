@@ -6,6 +6,7 @@ import logging
 import time
 from math import trunc
 import Adafruit_GPIO.I2C as I2C
+import pigpio
 
 
 class INA219:
@@ -91,7 +92,7 @@ class INA219:
     __CURRENT_LSB_FACTOR = 32800
 
     def __init__(self, shunt_ohms, max_expected_amps=None,
-                 busnum=None, address=__ADDRESS,
+                 busnum=1, address=__ADDRESS,
                  log_level=logging.ERROR):
         """Construct the class.
 
@@ -113,12 +114,37 @@ class INA219:
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(log_level)
 
-        self._i2c = I2C.get_i2c_device(address=address, busnum=busnum)
+        # self._i2c = I2C.get_i2c_device(address=address, busnum=busnum)
+        # self._pi = pigpio.pi()
+        # self._i2c = self._pi.i2c_open(busnum, address)
+        self._pi = None
+        self._i2c_handle = None
+        self._busnum = busnum
+        self._address = address
         self._shunt_ohms = shunt_ohms
         self._max_expected_amps = max_expected_amps
         self._min_device_current_lsb = self._calculate_min_current_lsb()
         self._gain = None
         self._auto_gain_enabled = False
+
+    def __del__(self):
+        self.close()
+
+    def __enter__(self):
+        self.open()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()
+
+    def open(self):
+        self._pi = pigpio.pi()
+        self._i2c_handle = self._pi.i2c_open(self._busnum, self._address)
+
+    def close(self):
+        if self._pi is not None:
+            self._pi.stop()
+
 
     def configure(self, voltage_range=RANGE_32V, gain=GAIN_AUTO,
                   bus_adc=ADC_12BIT, shunt_adc=ADC_12BIT):
@@ -385,13 +411,18 @@ class INA219:
             "write register 0x%02x: 0x%04x 0b%s" %
             (register, register_value,
              self.__binary_as_string(register_value)))
-        self._i2c.writeList(register, register_bytes)
+        # self._i2c.writeList(register, register_bytes)
+        self._pi.i2c_write_i2c_block_data(self._i2c_handle, register, register_bytes)
 
     def __read_register(self, register, negative_value_supported=False):
         if negative_value_supported:
-            register_value = self._i2c.readS16BE(register)
+            # register_value = self._i2c.readS16BE(register)
+            bytes, data = self._pi.i2c_read_i2c_block_data(self._i2c_handle, register, 2)
+            register_value = int.from_bytes(data, byteorder='big', signed=True)
         else:
-            register_value = self._i2c.readU16BE(register)
+            # register_value = self._i2c.readU16BE(register)
+            bytes, data = self._pi.i2c_read_i2c_block_data(self._i2c_handle, register, 2)
+            register_value = int.from_bytes(data, byteorder='big', signed=False)
         self.logger.debug(
             "read register 0x%02x: 0x%04x 0b%s" %
             (register, register_value,
