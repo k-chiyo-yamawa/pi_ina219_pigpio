@@ -93,7 +93,10 @@ class INA219:
 
     def __init__(self, shunt_ohms, max_expected_amps=None,
                  busnum=1, address=__ADDRESS,
-                 log_level=logging.ERROR):
+                 log_level=logging.ERROR,
+                 pi: pigpio.pi=None,
+                 i2c_handle: int=None,
+                 ):
         """Construct the class.
 
         Pass in the resistance of the shunt resistor and the maximum expected
@@ -117,8 +120,8 @@ class INA219:
         # self._i2c = I2C.get_i2c_device(address=address, busnum=busnum)
         # self._pi = pigpio.pi()
         # self._i2c = self._pi.i2c_open(busnum, address)
-        self._pi = None
-        self._i2c_handle = None
+        self._pi = pi
+        self._i2c_handle = i2c_handle
         self._busnum = busnum
         self._address = address
         self._shunt_ohms = shunt_ohms
@@ -138,12 +141,23 @@ class INA219:
         self.close()
 
     def open(self):
-        self._pi = pigpio.pi()
-        self._i2c_handle = self._pi.i2c_open(self._busnum, self._address)
+        if self._pi is None and self._i2c_handle is None:
+            self._pi = pigpio.pi()
+            self.logger.debug("pi opened")
+        if self._pi is not None and self._i2c_handle is None:
+            self._i2c_handle = self._pi.i2c_open(self._busnum, self._address)
+            self.logger.debug("i2c opened")
 
     def close(self):
+        if self._i2c_handle is not None:
+            assert self._pi is not None
+            self._pi.i2c_close(self._i2c_handle)
+            self._i2c_handle = None
+            self.logger.debug("i2c closed")
         if self._pi is not None:
             self._pi.stop()
+            self._pi = None
+            self.logger.debug("pi closed")
 
 
     def configure(self, voltage_range=RANGE_32V, gain=GAIN_AUTO,

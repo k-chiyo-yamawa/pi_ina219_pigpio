@@ -4,3 +4,4 @@ mock==5.2.0
 pbr==6.1.1
 six==1.17.0
 spidev==3.6
+pigpio==1.78
