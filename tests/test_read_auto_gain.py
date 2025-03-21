@@ -1,7 +1,7 @@
 import sys
 import logging
 import unittest
-from mock import Mock, call, patch
+from unittest.mock import Mock, call
 from ina219 import INA219
 from ina219 import DeviceRangeError
 
@@ -15,9 +15,7 @@ class TestReadAutoGain(unittest.TestCase):
 
     GAIN_RANGE_MSG = r"Current out of range \(overflow\)"
 
-    @patch('Adafruit_GPIO.I2C.get_i2c_device')
-    def test_auto_gain(self, device):
-        device.return_value = Mock()
+    def test_auto_gain(self):
         self.ina = INA219(0.1, 0.4)
         self.ina._pi = Mock()
         self.ina._pi.i2c_write_i2c_block_data = Mock()
@@ -36,9 +34,7 @@ class TestReadAutoGain(unittest.TestCase):
                  call(HANDLE, 0x05, [0x20, 0xcc]), call(HANDLE, 0x00, [0x11, 0x9f])]
         self.ina._pi.i2c_write_i2c_block_data.assert_has_calls(calls)
 
-    @patch('Adafruit_GPIO.I2C.get_i2c_device')
-    def test_auto_gain_out_of_range(self, device):
-        device.return_value = Mock()
+    def test_auto_gain_out_of_range(self):
         self.ina = INA219(0.1, 3.0)
         self.ina._pi = Mock()
         self.ina._pi.i2c_write_i2c_block_data = Mock()

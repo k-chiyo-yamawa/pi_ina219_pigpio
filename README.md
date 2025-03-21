@@ -1,10 +1,7 @@
-# Raspberry Pi Python Library for Voltage and Current Sensors Using the INA219
+# Raspberry Pi Python Library for Voltage and Current Sensors Using the INA219 with pigpio
 
-[![Build](https://github.com/chrisb2/pi_ina219/actions/workflows/python-package.yml/badge.svg)](https://github.com/chrisb2/pi_ina219/actions/workflows/python-package.yml)
-
-[![codecov](https://codecov.io/gh/chrisb2/pi_ina219/branch/master/graph/badge.svg)](https://codecov.io/gh/chrisb2/pi_ina219)
-
-[![PyPI version](https://badge.fury.io/py/pi-ina219.svg)](https://badge.fury.io/py/pi-ina219)
+pi_ina219をフォークし、pigpioに対応させたライブラリ。
+以下フォーク元の文書を一部修正。
 
 This Python library supports the [INA219](http://www.ti.com/lit/ds/symlink/ina219.pdf)
 voltage, current and power monitor sensor from Texas Instruments on Python 3. The intent of the library is to make it easy to use the
@@ -19,30 +16,6 @@ calculations which results in meaningless values for these readings.
 The low power mode of the INA219 is supported, so if only occasional
 reads are being made in a battery based system, current consumption can
 be minimised.
-
-The library has been tested with the
-[Adafruit INA219 Breakout](https://www.adafruit.com/products/904).
-
-## Installation and Upgrade
-
-This library and its dependency
-([Adafruit GPIO library](https://github.com/adafruit/Adafruit_Python_GPIO))
-can be installed from PyPI by executing:
-
-```shell
-sudo pip3 install pi-ina219
-```
-
-To upgrade from a previous version installed direct from Github execute:
-
-```shell
-sudo pip3 uninstall pi-ina219
-sudo pip3 install pi-ina219
-```
-
-The Adafruit library supports the I2C protocol on all versions of the
-Raspberry Pi. Remember to enable the I2C bus under the _Advanced Options_
-of _raspi-config_.
 
 ## Usage
 
@@ -85,17 +58,17 @@ SHUNT_OHMS = 0.1
 
 
 def read():
-    ina = INA219(SHUNT_OHMS)
-    ina.configure()
+    with INA219(SHUNT_OHMS) as ina:
+      ina.configure()
 
-    print("Bus Voltage: %.3f V" % ina.voltage())
-    try:
-        print("Bus Current: %.3f mA" % ina.current())
-        print("Power: %.3f mW" % ina.power())
-        print("Shunt voltage: %.3f mV" % ina.shunt_voltage())
-    except DeviceRangeError as e:
-        # Current out of device range with specified shunt resistor
-        print(e)
+      print("Bus Voltage: %.3f V" % ina.voltage())
+      try:
+          print("Bus Current: %.3f mA" % ina.current())
+          print("Power: %.3f mW" % ina.power())
+          print("Shunt voltage: %.3f mV" % ina.shunt_voltage())
+      except DeviceRangeError as e:
+          # Current out of device range with specified shunt resistor
+          print(e)
 
 
 if __name__ == "__main__":
@@ -126,17 +99,17 @@ MAX_EXPECTED_AMPS = 0.2
 
 
 def read():
-    ina = INA219(SHUNT_OHMS, MAX_EXPECTED_AMPS)
-    ina.configure(ina.RANGE_16V)
+    with INA219(SHUNT_OHMS, MAX_EXPECTED_AMPS) as ina:
+      ina.configure(ina.RANGE_16V)
 
-    print("Bus Voltage: %.3f V" % ina.voltage())
-    try:
-        print("Bus Current: %.3f mA" % ina.current())
-        print("Power: %.3f mW" % ina.power())
-        print("Shunt voltage: %.3f mV" % ina.shunt_voltage())
-    except DeviceRangeError as e:
-        # Current out of device range with specified shunt resistor
-        print(e)
+      print("Bus Voltage: %.3f V" % ina.voltage())
+      try:
+          print("Bus Current: %.3f mA" % ina.current())
+          print("Power: %.3f mW" % ina.power())
+          print("Shunt voltage: %.3f mV" % ina.shunt_voltage())
+      except DeviceRangeError as e:
+          # Current out of device range with specified shunt resistor
+          print(e)
 
 
 if __name__ == "__main__":
@@ -160,16 +133,16 @@ MAX_EXPECTED_AMPS = 0.2
 
 
 def read():
-    ina = INA219(SHUNT_OHMS, MAX_EXPECTED_AMPS)
-    ina.configure(ina.RANGE_16V, ina.GAIN_1_40MV)
+    with INA219(SHUNT_OHMS, MAX_EXPECTED_AMPS) as ina:
+      ina.configure(ina.RANGE_16V, ina.GAIN_1_40MV)
 
-    print("Bus Voltage: %.3f V" % ina.voltage())
-    try:
-        print("Bus Current: %.3f mA" % ina.current())
-        print("Power: %.3f mW" % ina.power())
-        print("Shunt voltage: %.3f mV" % ina.shunt_voltage())
-    except DeviceRangeError as e:
-        print("Current overflow")
+      print("Bus Voltage: %.3f V" % ina.voltage())
+      try:
+          print("Bus Current: %.3f mA" % ina.current())
+          print("Power: %.3f mW" % ina.power())
+          print("Shunt voltage: %.3f mV" % ina.shunt_voltage())
+      except DeviceRangeError as e:
+          print("Current overflow")
 
 
 if __name__ == "__main__":

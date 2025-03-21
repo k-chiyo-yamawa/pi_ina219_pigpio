@@ -1,7 +1,7 @@
 import sys
 import logging
 import unittest
-from mock import Mock, call, patch
+from unittest.mock import Mock, call
 from ina219 import INA219
 
 logger = logging.getLogger()
@@ -12,18 +12,14 @@ HANDLE = 1234
 
 class TestConfiguration(unittest.TestCase):
 
-    @patch('Adafruit_GPIO.I2C.get_i2c_device')
-    def setUp(self, device):
-        device.return_value = Mock()
+    def setUp(self):
         self.ina = INA219(0.1, 0.4)
         self.ina._pi = Mock(name="_pi")
         self.ina._pi.i2c_write_i2c_block_data = Mock(name="i2c_write_i2c_block_data", return_value=(2, b'ab'))
 
         self.ina._i2c_handle = HANDLE
 
-    @patch('Adafruit_GPIO.I2C.get_i2c_device')
-    def test_calibration_register_maximum_is_fffe_1_ohm(self, device):
-        device.return_value = Mock()
+    def test_calibration_register_maximum_is_fffe_1_ohm(self):
         self.ina = INA219(1.0, 0.01)
         self.ina._pi = Mock()
         self.ina._i2c_handle = HANDLE
@@ -31,9 +27,7 @@ class TestConfiguration(unittest.TestCase):
         calls = [call(HANDLE, 0x05, [0xFF, 0xFE]), call(HANDLE, 0x00, [0x01, 0x9f])]
         self.ina._pi.i2c_write_i2c_block_data.assert_has_calls(calls)
 
-    @patch('Adafruit_GPIO.I2C.get_i2c_device')
-    def test_calibration_register_maximum_is_fffe_100_mohm(self, device):
-        device.return_value = Mock()
+    def test_calibration_register_maximum_is_fffe_100_mohm(self):
         self.ina = INA219(0.1, 0.1)
         self.ina._pi = Mock()
         self.ina._i2c_handle = HANDLE
@@ -41,9 +35,7 @@ class TestConfiguration(unittest.TestCase):
         calls = [call(HANDLE, 0x05, [0xFF, 0xFE]), call(HANDLE, 0x00, [0x01, 0x9f])]
         self.ina._pi.i2c_write_i2c_block_data.assert_has_calls(calls)
 
-    @patch('Adafruit_GPIO.I2C.get_i2c_device')
-    def test_calibration_register_maximum_is_fffe_10_mohm(self, device):
-        device.return_value = Mock()
+    def test_calibration_register_maximum_is_fffe_10_mohm(self):
         self.ina = INA219(0.01, 0.1)
         self.ina._pi = Mock()
         self.ina._i2c_handle = HANDLE
@@ -59,9 +51,7 @@ class TestConfiguration(unittest.TestCase):
         calls = [call(HANDLE, 0x05, [0x83, 0x33]), call(HANDLE, 0x00, [0x09, 0x9f])]
         self.ina._pi.i2c_write_i2c_block_data.assert_has_calls(calls)
 
-    @patch('Adafruit_GPIO.I2C.get_i2c_device')
-    def test_auto_gain_no_expected_amps(self, device):
-        device.return_value = Mock()
+    def test_auto_gain_no_expected_amps(self):
         self.ina = INA219(0.1)
         self.ina._pi = Mock()
         self.ina._pi.i2c_write_i2c_block_data = Mock()
@@ -72,9 +62,7 @@ class TestConfiguration(unittest.TestCase):
         calls = [call(HANDLE, 0x05, [0x83, 0x33]), call(HANDLE, 0x00, [0x01, 0x9f])]
         self.ina._pi.i2c_write_i2c_block_data.assert_has_calls(calls)
 
-    @patch('Adafruit_GPIO.I2C.get_i2c_device')
-    def test_manual_gain_no_expected_amps(self, device):
-        device.return_value = Mock()
+    def test_manual_gain_no_expected_amps(self):
         self.ina = INA219(0.1)
         self.ina._pi = Mock()
         self.ina._i2c_handle = HANDLE
@@ -85,9 +73,7 @@ class TestConfiguration(unittest.TestCase):
         calls = [call(HANDLE, 0x05, [0x83, 0x33]), call(HANDLE, 0x00, [0x01, 0x9f])]
         self.ina._pi.i2c_write_i2c_block_data.assert_has_calls(calls)
 
-    @patch('Adafruit_GPIO.I2C.get_i2c_device')
-    def test_auto_gain_out_of_range(self, device):
-        device.return_value = Mock()
+    def test_auto_gain_out_of_range(self):
         self.ina = INA219(0.1, 4)
         self.ina._pi = Mock()
         with self.assertRaisesRegexp(ValueError, "Expected amps"):
@@ -165,9 +151,7 @@ class TestConfiguration(unittest.TestCase):
         with self.assertRaisesRegexp(ValueError, "Invalid voltage range"):
             self.ina.configure(64, self.ina.GAIN_1_40MV)
 
-    @patch('Adafruit_GPIO.I2C.get_i2c_device')
-    def test_max_current_exceeded(self, device):
-        device.return_value = Mock()
+    def test_max_current_exceeded(self):
         ina = INA219(0.1, 0.5)
         ina._pi = Mock()
         with self.assertRaisesRegexp(ValueError, "Expected current"):

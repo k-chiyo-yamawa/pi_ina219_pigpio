@@ -16,7 +16,6 @@ classifiers = ['Development Status :: 5 - Production/Stable',
                'Operating System :: POSIX :: Linux',
                'License :: OSI Approved :: MIT License',
                'Intended Audience :: Developers',
-               'Programming Language :: Python :: 2.7',
                'Programming Language :: Python :: 3.4',
                'Programming Language :: Python :: 3.5',
                'Programming Language :: Python :: 3.6',
@@ -24,7 +23,7 @@ classifiers = ['Development Status :: 5 - Production/Stable',
                'Topic :: System :: Hardware :: Hardware Drivers']
 
 # Define required packages.
-requires = ['Adafruit_GPIO', 'mock']
+requires = ['pigpio']
 
 
 def read_long_description():
@@ -37,14 +36,14 @@ def read_long_description():
 
 setup(name='pi-ina219',
       version='1.4.1',
-      author='Chris Borrill',
-      author_email='chris.borrill@gmail.com',
+      author='Kazuma Chiyo',
+      author_email='k.chiyo@yamawa.com',
       description=DESC,
       long_description=read_long_description(),
       license='MIT',
-      url='https://github.com/chrisb2/pi_ina219/',
+      url='https://github.com/k-chiyo-yamawa/pi_ina219_pigpio',
       classifiers=classifiers,
-      keywords='ina219 raspberrypi',
+      keywords='ina219 raspberrypi pigpio',
       install_requires=requires,
       test_suite='tests',
       py_modules=['ina219'])

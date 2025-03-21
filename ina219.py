@@ -5,7 +5,6 @@ Supports the Raspberry Pi using the I2C bus.
 import logging
 import time
 from math import trunc
-import Adafruit_GPIO.I2C as I2C
 import pigpio
 
 

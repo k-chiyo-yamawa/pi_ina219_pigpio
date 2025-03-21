@@ -2,8 +2,6 @@
 
 import logging
 
-import pigpio
-
 from ina219 import INA219
 
 SHUNT_OHMS = 0.01
@@ -11,7 +9,6 @@ MAX_EXPECTED_AMPS = 5.0
 
 
 def read():
-    # pi = pigpio.pi()
     with INA219(SHUNT_OHMS, MAX_EXPECTED_AMPS, log_level=logging.INFO) as ina:
         ina.configure(ina.RANGE_16V, ina.GAIN_AUTO)
 
@@ -20,8 +17,6 @@ def read():
         print("Supply Voltage : %.3f V" % ina.supply_voltage())
         print("Shunt voltage  : %.3f mV" % ina.shunt_voltage())
         print("Power          : %.3f mW" % ina.power())
-
-    # pi.stop()
 
 
 if __name__ == "__main__":

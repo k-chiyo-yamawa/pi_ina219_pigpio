@@ -1,7 +1,7 @@
 import sys
 import logging
 import unittest
-from mock import Mock, patch
+from unittest.mock import Mock
 from ina219 import INA219
 from ina219 import DeviceRangeError
 
@@ -15,9 +15,7 @@ class TestRead(unittest.TestCase):
 
     GAIN_RANGE_MSG = r"Current out of range \(overflow\)"
 
-    @patch('Adafruit_GPIO.I2C.get_i2c_device')
-    def setUp(self, device):
-        device.return_value = Mock()
+    def setUp(self):
         self.ina = INA219(0.1, 0.4)
         self.ina._pi = Mock()
         self.ina._pi.i2c_write_i2c_block_data = Mock()
