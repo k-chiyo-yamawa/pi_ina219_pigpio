@@ -34,7 +34,7 @@ def read_long_description():
         return ""
 
 
-setup(name='pi-ina219',
+setup(name='pi-ina219-pigpio',
       version='1.4.1',
       author='Kazuma Chiyo',
       author_email='k.chiyo@yamawa.com',

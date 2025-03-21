@@ -2,6 +2,6 @@
 .coverage
 build
 dist
-pi_ina219.egg-info
+pi_ina219_pigpio.egg-info
 .idea/
 
